@@ -1,0 +1,32 @@
+rancherBillingAdapterImage: registry.opensuse.org/home/yeey/rancher-csp-billing-adapter/containers/rancher-local-billing-container
+rancherBillingAdapterImageTag: latest
+#rancherBillingAdapterImageDigest: sha256:...
+#rancherBillingAdapterImagePullPolicy: Always
+
+imagePullSecrets: []
+
+serviceAccount:
+  # Annotations to add to the service account
+  annotations: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# specific to Azure
+#
+global:
+  azure:
+    enabled: false
+    identity:
+      clientId: TBD
+    extension:
+      resourceId: TBD
+    marketplace:
+      planId: TBD
+  aws:
+    enabled: false
+    accountNumber: ""
+    roleName: ""

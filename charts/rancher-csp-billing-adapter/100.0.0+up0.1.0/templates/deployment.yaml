@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rancher-csp-billing-adapter.fullname" . }}
+  labels:
+    {{- include "rancher-csp-billing-adapter.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "rancher-csp-billing-adapter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rancher-csp-billing-adapter.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: ADAPTER_NAMESPACE
+          value: {{ .Release.Namespace | quote }}
+        - name: USAGE_CRD_PLURAL
+          value: '{{ include "csp-billing-adapter.usageCRDPlural" . }}'
+        - name: USAGE_RESOURCE
+          value: '{{ include "csp-billing-adapter.usageResource" . }}'
+        - name: USAGE_API_VERSION
+          value: '{{ include "csp-billing-adapter.usageAPIVersion" . }}'
+        - name: USAGE_API_GROUP
+          value: '{{ include "csp-billing-adapter.usageAPIGroup" . }}'
+{{- if and (.Values.global) (.Values.global.azure) (.Values.global.azure.enabled) }}
+        - name: "CLIENT_ID"
+          value: "{{ .Values.global.azure.identity.clientId }}"
+        - name: "EXTENSION_RESOURCE_ID"
+          value: "{{ .Values.global.azure.extension.resourceId }}"
+        - name: "PLAN_ID"
+          value: "{{ .Values.global.azure.marketplace.planId }}"
+{{- end }}
+{{- if .Values.cspAdapterConfigFile }}
+        - name: CSP_ADAPTER_CONFIG_FILE
+          value: {{ .Values.cspAdapterConfigFile }}
+{{- end }}
+{{- if .Values.rancherBillingAdapterImageDigest }}
+        image: {{ .Values.rancherBillingAdapterImage }}@{{ .Values.rancherBillingAdapterImageDigest }}
+{{- else }}
+        image: {{ .Values.rancherBillingAdapterImage }}:{{ default .Chart.AppVersion .Values.rancherBillingAdapterImageTag }}
+{{- end }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.rancherBillingAdapterImagePullPolicy }}
+        name: {{ .Chart.Name }}
+      serviceAccountName: {{ include "rancher-csp-billing-adapter.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
