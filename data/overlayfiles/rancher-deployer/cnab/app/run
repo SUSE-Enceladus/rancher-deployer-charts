@@ -1,0 +1,165 @@
+#!/bin/sh
+set -xe
+
+action=${CNAB_ACTION:-install}
+name=${CNAB_INSTALLATION_NAME:-rancher-cloud}
+rancher_hostname=${RANCHER_HOSTNAME:-rancher-cloud.my.org}
+rancher_server_url=${RANCHER_SERVER_URL:-https://rancher-cloud.my.org}
+rancher_replicas=${RANCHER_REPLICAS:-1}
+rancher_bootstrap_password=${RANCHER_BOOTSTRAP_PASSWORD:-rancher}
+
+helm_timeout=20m
+
+rancher_image_arguments=
+if [[ ! -z "${RANCHER_IMAGE}" ]]
+then
+	rancher_image_arguments="--set rancherImage=${RANCHER_IMAGE}"
+fi
+if [[ ! -z "${RANCHER_IMAGE_DIGEST}" ]]
+then
+        rancher_image_arguments="${rancher_image_arguments} --set rancherImageDigest=${RANCHER_IMAGE_DIGEST}"
+else
+	rancher_image_arguments="${rancher_image_arguments} --set rancherImageTag=${RANCHER_IMAGE_TAG}"
+fi
+
+rancher_ingress_class_name_arguments=
+if [[ ! -z "${RANCHER_INGRESS_CLASS_NAME}" && "${RANCHER_INGRESS_CLASS_NAME}" != "none" ]]
+then
+	rancher_ingress_class_name_arguments="--set ingress.ingressClassName=${RANCHER_INGRESS_CLASS_NAME}"
+fi
+
+rancher_usage_operator_image_arguments=
+if [[ ! -z "${RANCHER_USAGE_OPERATOR_IMAGE}" ]]
+then
+        rancher_usage_operator_image_arguments="--set rancherUsageOperatorImage=${RANCHER_USAGE_OPERATOR_IMAGE}"
+fi
+if [[ ! -z "${RANCHER_USAGE_OPERATOR_IMAGE_DIGEST}" ]]
+then
+        rancher_usage_operator_image_arguments="${rancher_usage_operator_image_arguments} --set rancherUsageOperatorImageDigest=${RANCHER_USAGE_OPERATOR_IMAGE_DIGEST}"
+else
+	rancher_usage_operator_image_arguments="${rancher_usage_operator_image_arguments} --set rancherUsageOperatorImageTag=${RANCHER_USAGE_OPERATOR_IMAGE_TAG}"
+fi
+
+rancher_billing_adapter_image_arguments=
+if [[ ! -z "${RANCHER_BILLING_ADAPTER_IMAGE}" ]]
+then
+        rancher_billing_adapter_image_arguments="--set rancherBillingAdapterImage=${RANCHER_BILLING_ADAPTER_IMAGE}"
+fi
+if [[ ! -z "${RANCHER_BILLING_ADAPTER_IMAGE_DIGEST}" ]]
+then
+        rancher_billing_adapter_image_arguments="${rancher_billing_adapter_image_arguments} --set rancherBillingAdapterImageDigest=${RANCHER_BILLING_ADAPTER_IMAGE_DIGEST}"
+else
+	rancher_billing_adapter_image_arguments="${rancher_billing_adapter_image_arguments} --set rancherBillingAdapterImageTag=${RANCHER_BILLING_ADAPTER_IMAGE_TAG}"
+fi
+
+aws_billing_arguments=
+if [[ ! -z "${AWS_ACCOUNT_NUMBER}" ]]
+then
+	aws_billing_arguments="--set global.aws.enabled=true --set global.aws.accountNumber=${AWS_ACCOUNT_NUMBER} --set global.aws.roleName=${AWS_ROLE_NAME}"
+fi
+
+cert_manager_image_arguments=
+if [[ ! -z "${CERT_MANAGER_IMAGE}" ]]
+then
+        cert_manager_image_arguments="--set image.repository=${CERT_MANAGER_IMAGE}" 
+fi
+if [[ ! -z "${CERT_MANAGER_IMAGE_DIGEST}" ]]
+	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.digest=${CERT_MANAGER_IMAGE_DIGEST}"
+else
+	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.tag=${CERT_MANAGER_IMAGE_TAG}"
+fi
+
+azure_billing_arguments=
+if [[ ! -z "${AZURE_CLIENT_ID}" ]]
+then
+	azure_billing_arguments="--set global.azure.enabled=true --set global.azure.identity.clientId=${AZURE_CLIENT_ID} --set global.azure.extension.resourceId=${AZURE_RESOURCE_ID} --set global.azure.marketplace.planId=${AZURE_PLAN_ID}"
+fi
+
+HasKubernetesNamespace()
+{       
+    kubectl get namespace "${1}" 1>/dev/null 2>/dev/null
+}
+
+CreateKubernetesNamespace()
+{
+    kubectl create namespace "${1}"
+}
+
+EnsureKubernetesNamespaceExists()
+{
+    HasKubernetesNamespace "${1}" \
+        || CreateKubernetesNamespace "${1}"
+}
+
+CleanupRancherCACertificateSecrets()
+{
+	kubectl delete secret tls-ca-additional -n cattle-csp-billing-adapter-system | true
+}
+
+CreateRancherCACertificateSecrets()
+{
+	# cleanup the previously created secret so we create a fresh one every
+	# time, even though they may be the same.
+	CleanupRancherCACertificateSecrets
+	
+	# now create a fresh one
+	kubectl get secret tls-rancher -n cattle-system -o jsonpath="{.data.tls\.crt}" | base64 -d  >> ca-additional.pem
+	kubectl create secret generic tls-ca-additional -n cattle-csp-billing-adapter-system --from-file=ca-additional.pem
+}
+
+case $action in
+    install)
+	echo "Installing Cert-Manager"
+	helm upgrade --install cert-manager  /cnab/app/charts/cert-manager --atomic --create-namespace --namespace cert-manager --set installCRDs=true ${cert_manager_image_arguments}
+	echo "Cert-Manager successfully installed"
+        echo "Installing Rancher"
+	EnsureKubernetesNamespaceExists "cattle-system"
+	helm upgrade --install rancher /cnab/app/charts/rancher --atomic --namespace cattle-system --set installCRDs=true ${rancher_image_arguments} ${rancher_ingress_class_name_arguments} --set hostname=${rancher_hostname} --set bootstrapPassword=${rancher_bootstrap_password} --set replicas=${rancher_replicas} --set extraEnv[0].name=CATTLE_SERVER_URL --set extraEnv[0].value=${rancher_server_url} --set extraEnv[1].name=CATTLE_PROMETHEUS_METRICS --set-string extraEnv[1].value=true --timeout ${helm_timeout}
+        echo "Rancher successfully installed"
+        echo "Installing CSP Rancher Usage Operator CRD"
+	EnsureKubernetesNamespaceExists "cattle-csp-billing-adapter-system"
+        helm upgrade --install csp-adapter-crd /cnab/app/charts/csp-adapter-crd/100.0.0+up0.1.0 --namespace cattle-csp-billing-adapter-system --atomic --timeout ${helm_timeout}
+        echo "CSP Rancher Usage Operator CRD successfully installed"
+        echo "Installing CSP Rancher Usage Operator"
+	EnsureKubernetesNamespaceExists "cattle-csp-billing-adapter-system"
+	CreateRancherCACertificateSecrets
+        helm upgrade --install csp-rancher-usage-operator /cnab/app/charts/csp-rancher-usage-operator/100.0.0+up0.1.0 ${rancher_usage_operator_image_arguments} --namespace cattle-csp-billing-adapter-system --atomic --timeout ${helm_timeout}
+        echo "CSP Rancher Usage Operator successfully installed"
+        echo "Installing Rancher CSP Billing Adapter"
+	EnsureKubernetesNamespaceExists "cattle-csp-billing-adapter-system"
+        helm upgrade --install rancher-csp-billing-adapter /cnab/app/charts/rancher-csp-billing-adapter/100.0.0+up0.1.0 ${rancher_billing_adapter_image_arguments} ${azure_billing_arguments} ${aws_billing_arguments} --namespace cattle-csp-billing-adapter-system --atomic --timeout ${helm_timeout}
+        echo "Rancher CSP Billing Adapter successfully installed"
+        ;;
+    uninstall)
+        echo "Uninstalling Rancher CSP Billing Adapter"
+        helm uninstall rancher-csp-billing-adapter -n cattle-csp-billing-adapter-system --timeout ${helm_timeout}
+        echo "Rancher CSP Billing Adapter successfully uninstalled"
+        echo "Uninstalling CSP Rancher Usage Operator"
+        helm uninstall csp-rancher-usage-operator -n cattle-csp-billing-adapter-system --timeout ${helm_timeout}
+        echo "CSP Rancher Usage Operator successfully uninstalled"
+        echo "Uninstalling CSP Rancher Usage Operator CRD"
+        helm uninstall csp-adapter-crd -n cattle-csp-billing-adapter-system --timeout ${helm_timeout}
+        echo "CSP Rancher Usage Operator CRD successfully uninstalled"
+        echo "Uninstalling Rancher"
+        helm uninstall rancher -n cattle-system --timeout ${helm_timeout}
+	#echo "Running Rancher cleanup"
+	#/cnab/rancher-cleanup/cleanup.sh force
+        #echo "Rancher successfully uninstalled"
+	echo "Uninstalling Cert-Manager"
+	helm uninstall cert-manager -n cert-manager --timeout ${helm_timeout}
+	echo "Cert-Manager successfully uninstalled"
+	echo "Cleaning up CA certificate secrets"
+	CleanupRancherCACertificateSecrets
+	echo "CA certificate secretes successfully deleted"
+        ;;
+    upgrade)
+        echo "Upgrade action"
+        ;;
+    status)
+        echo "Status action"
+        ;;
+    *)
+    echo "No action for $action"
+    ;;
+esac
+echo "Action $action complete for $name"
