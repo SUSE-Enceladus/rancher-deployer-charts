@@ -1,0 +1,53 @@
+rancherHostname: csp-billing
+rancherServerURL: https://csp-billing
+rancherReplicas: 1
+rancherBootstrapPassword: Ranch99
+rancherIngressClassName: none
+
+global:
+  csp:
+    images:
+      cert_manager:
+        registry: quay.io/jetstack
+        image: cert-manager-controller
+        digest: sha256:2a026935a03575527525b12952b6e1e6a2caddf983d67f8e5025ed85de7b0d7f
+      rancher:
+        registry: rancher
+        image: rancher
+        tag: latest
+      rancher_cloud:
+        registry: registry.suse.de/home/yeey/csp-billing-adapter/images
+        image: rancher-deployer
+        digest: sha256:534140af9b08e86a3d5bb32ba84f0a00e2d7f564fd207bde4f4289c542cc5a51
+      csp_rancher_usage_operator:
+        registry: registry.suse.de/devel/pubcloud/crosscloud/sle15-sp5/images
+        image: rancher-usage-operator
+        tag: latest
+      rancher_csp_billing_adapter:
+        registry: registry.suse.de/devel/pubcloud/crosscloud/sle15-sp5/images
+        image: rancher-billing-azure-by-suse-ltd
+        digest: sha256:fd573f7840266d7e3836076fd8effbec5a4e08ef7cd62c719801244aa6d7a6a0
+
+image:
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  runAsUser: 0

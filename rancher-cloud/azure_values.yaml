@@ -1,0 +1,63 @@
+rancherHostname: csp-billing
+rancherServerURL: https://csp-billing
+rancherReplicas: 1
+rancherBootstrapPassword: Ranch99
+rancherIngressClassName: none
+
+global:
+  azure:
+    enabled: true
+    identity:
+      # Application's Managed Service Identity (MSI) Client ID. ClientID can be used to generate authentication token to communicate to external services like Microsoft Marketplace Metering API
+      clientId: "DONOTMODIFY" # Azure populates this value at deployment time
+    marketplace:
+      # id of the plan purchased for the Azure Marketplace Kubernetes application,to be used in usage event payload to metering api, for more information please refer: https://learn.microsoft.com/en-us/partner-center/marketplace/marketplace-metering-service-apis
+      planId: "DONOTMODIFY" # Azure populates this value at deployment time
+    extension:
+      # resource id of the Azure Marketplace Kubernetes application,to be used in usage event payload to metering api, for more information please refer: https://learn.microsoft.com/en-us/partner-center/marketplace/marketplace-metering-service-apis
+      resourceId: "DONOTMODIFY" # application's Azure Resource ID, Azure populates this value at deployment time
+    images:
+      cert_manager:
+        registry: %CERT_MANAGER_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %CERT_MANAGER_IMAGE_PLACEHOLDER%
+        digest: %CERT_MANAGER_IMAGE_DIGEST_PLACEHOLDER%
+      rancher:
+        registry: %RANCHER_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %RANCHER_IMAGE_PLACEHOLDER%
+        digest: %RANCHER_IMAGE_DIGEST_PLACEHOLDER%
+      rancher_cloud:
+        registry: %RANCHER_CLOUD_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %RANCHER_CLOUD_IMAGE_PLACEHOLDER%
+        digest: %RANCHER_CLOUD_IMAGE_DIGEST_PLACEHOLDER%
+      csp_rancher_usage_operator:
+        registry: %CSP_RANCHER_USAGE_OPERATOR_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %CSP_RANCHER_USAGE_OPERATOR_IMAGE_PLACEHOLDER%
+        digest: %CSP_RANCHER_USAGE_OPERATOR_IMAGE_DIGEST_PLACEHOLDER%
+      rancher_csp_billing_adapter:
+        registry: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_PLACEHOLDER%
+        digest: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_DIGEST_PLACEHOLDER%
+
+image:
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  runAsUser: 0

@@ -1,0 +1,48 @@
+# Default values for rancher-cloud.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  aws:
+    enabled: false
+    accountNumber: ""
+    roleName: ""
+
+# NOTE: the rancher-cloud image can also be specified in the CSP-specific
+# sections, namely global.azure.images or global.csp.images. If any of the
+# CSP-specifics sections are present and enabled, the rancher-cloud image
+# in those sections have precedent over the image specified in the image
+# section here.
+image:
+  repository: yeey/rancher-cloud
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  runAsUser: 0
+
+rancherHostname: csp-billing
+rancherServerURL: https://csp-billing
+rancherReplicas: 1
+rancherBootstrapPassword: Ranch99
+rancherIngressClassName: none
