@@ -64,6 +64,7 @@ then
         cert_manager_image_arguments="--set image.repository=${CERT_MANAGER_IMAGE}" 
 fi
 if [[ ! -z "${CERT_MANAGER_IMAGE_DIGEST}" ]]
+then
 	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.digest=${CERT_MANAGER_IMAGE_DIGEST}"
 else
 	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.tag=${CERT_MANAGER_IMAGE_TAG}"
