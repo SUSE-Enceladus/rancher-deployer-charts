@@ -7,6 +7,13 @@ global:
     enabled: false
     accountNumber: ""
     roleName: ""
+  google:
+    enabled: false
+    ubbagent:
+      reportingSecretName: fake-reporting-secret
+      image:
+        repository: gcr.io/cloud-marketplace-tools/metering/ubbagent
+        tag: latest
 
 # NOTE: the rancher-cloud image can also be specified in the CSP-specific
 # sections, namely global.azure.images or global.csp.images. If any of the
