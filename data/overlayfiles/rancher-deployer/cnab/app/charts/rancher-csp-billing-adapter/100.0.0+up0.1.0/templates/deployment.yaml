@@ -13,37 +13,69 @@ spec:
       labels:
         {{- include "rancher-csp-billing-adapter.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if and (.Values.global) (.Values.global.google) (.Values.global.google.enabled) }}
+      volumes:
+        # needed by GCMP billig agent
+        - name: ubbagent-config
+          configMap:
+            name: ubbagent-config
+      {{- end }}
       containers:
-      - env:
-        - name: ADAPTER_NAMESPACE
-          value: {{ .Release.Namespace | quote }}
-        - name: USAGE_CRD_PLURAL
-          value: '{{ include "csp-billing-adapter.usageCRDPlural" . }}'
-        - name: USAGE_RESOURCE
-          value: '{{ include "csp-billing-adapter.usageResource" . }}'
-        - name: USAGE_API_VERSION
-          value: '{{ include "csp-billing-adapter.usageAPIVersion" . }}'
-        - name: USAGE_API_GROUP
-          value: '{{ include "csp-billing-adapter.usageAPIGroup" . }}'
-{{- if and (.Values.global) (.Values.global.azure) (.Values.global.azure.enabled) }}
-        - name: "CLIENT_ID"
-          value: "{{ .Values.global.azure.identity.clientId }}"
-        - name: "EXTENSION_RESOURCE_ID"
-          value: "{{ .Values.global.azure.extension.resourceId }}"
-        - name: "PLAN_ID"
-          value: "{{ .Values.global.azure.marketplace.planId }}"
-{{- end }}
-{{- if .Values.cspAdapterConfigFile }}
-        - name: CSP_ADAPTER_CONFIG_FILE
-          value: {{ .Values.cspAdapterConfigFile }}
-{{- end }}
-{{- if .Values.rancherBillingAdapterImageDigest }}
+      {{- if and (.Values.global) (.Values.global.google) (.Values.global.google.enabled) }}
+      # GCMP billingagent container
+      - name: ubbagent
+        image: "{{ .Values.global.google.ubbagent.image.repository }}:{{ .Values.global.google.ubbagent.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.imagePullPoliicy }}"
+        env:
+          - name: AGENT_CONFIG_FILE
+            value: "/etc/ubbagent/config.yaml"
+          - name: AGENT_LOCAL_PORT
+            value: "4567"
+          - name: AGENT_ENCODED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (print (.Release.Name | trunc 63 | trimSuffix "-") "-license") .Values.global.google.ubbagent.reportingSecretName }}
+                key: reporting-key
+          - name: AGENT_CONSUMER_ID
+            valueFrom:
+              secretKeyRef:
+                name: {{ default (print (.Release.Name | trunc 63 | trimSuffix "-") "-license") .Values.global.google.ubbagent.reportingSecretName }}
+                key: consumer-id
+        volumeMounts:
+        - name: ubbagent-config
+          mountPath: /etc/ubbagent
+      {{- end }}
+      - name: {{ .Chart.Name }}
+        env:
+          - name: ADAPTER_NAMESPACE
+            value: {{ .Release.Namespace | quote }}
+          - name: USAGE_CRD_PLURAL
+            value: '{{ include "csp-billing-adapter.usageCRDPlural" . }}'
+          - name: USAGE_RESOURCE
+            value: '{{ include "csp-billing-adapter.usageResource" . }}'
+          - name: USAGE_API_VERSION
+            value: '{{ include "csp-billing-adapter.usageAPIVersion" . }}'
+          - name: USAGE_API_GROUP
+            value: '{{ include "csp-billing-adapter.usageAPIGroup" . }}'
+  {{- if and (.Values.global) (.Values.global.azure) (.Values.global.azure.enabled) }}
+          - name: "CLIENT_ID"
+            value: "{{ .Values.global.azure.identity.clientId }}"
+          - name: "EXTENSION_RESOURCE_ID"
+            value: "{{ .Values.global.azure.extension.resourceId }}"
+          - name: "PLAN_ID"
+            value: "{{ .Values.global.azure.marketplace.planId }}"
+  {{- end }}
+  {{- if .Values.cspAdapterConfigFile }}
+          - name: CSP_ADAPTER_CONFIG_FILE
+            value: {{ .Values.cspAdapterConfigFile }}
+  {{- end }}
+  {{- if .Values.rancherBillingAdapterImageDigest }}
         image: {{ .Values.rancherBillingAdapterImage }}@{{ .Values.rancherBillingAdapterImageDigest }}
-{{- else }}
+  {{- else }}
         image: {{ .Values.rancherBillingAdapterImage }}:{{ default .Chart.AppVersion .Values.rancherBillingAdapterImageTag }}
-{{- end }}
+  {{- end }}
         imagePullPolicy: {{ default "IfNotPresent" .Values.rancherBillingAdapterImagePullPolicy }}
-        name: {{ .Chart.Name }}
+
       serviceAccountName: {{ include "rancher-csp-billing-adapter.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
