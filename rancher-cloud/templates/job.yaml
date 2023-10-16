@@ -39,6 +39,12 @@ spec:
             - name: AWS_ROLE_NAME
               value: "{{ .Values.global.aws.roleName }}"
 {{- end }}
+{{- if and (.Values.global) (.Values.global.google) (.Values.global.google.enabled) }}
+            - name: GOOGLE_ACCOUNT_NUMBER
+              value: "{{ .Values.global.google.accountNumber }}"
+            - name: GOOGLE_ROLE_NAME
+              value: "{{ .Values.global.google.roleName }}"
+{{- end }}
 {{- if and (.Values.global) (.Values.global.azure) (.Values.global.azure.enabled) }}
             - name: AZURE_CLIENT_ID
               value: "{{ .Values.global.azure.identity.clientId }}"

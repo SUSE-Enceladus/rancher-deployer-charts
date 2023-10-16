@@ -30,3 +30,7 @@ global:
     enabled: false
     accountNumber: ""
     roleName: ""
+  google:
+    enabled: false
+    accountNumber: ""
+    roleName: ""

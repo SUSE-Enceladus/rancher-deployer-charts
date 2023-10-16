@@ -8,6 +8,11 @@ global:
     accountNumber: ""
     roleName: ""
 
+  google:
+    enabled: false
+    accountNumber: ""
+    roleName: ""
+
 # NOTE: the rancher-cloud image can also be specified in the CSP-specific
 # sections, namely global.azure.images or global.csp.images. If any of the
 # CSP-specifics sections are present and enabled, the rancher-cloud image

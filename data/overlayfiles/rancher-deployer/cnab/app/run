@@ -58,6 +58,12 @@ then
 	aws_billing_arguments="--set global.aws.enabled=true --set global.aws.accountNumber=${AWS_ACCOUNT_NUMBER} --set global.aws.roleName=${AWS_ROLE_NAME}"
 fi
 
+google_cloud_billing_arguments=
+if [[ ! -z "${GOOGLE_ACCOUNT_NUMBER}" ]]
+then
+        google_cloud_billing_arguments="--set global.google.enabled=true --set global.google.accountNumber=${GOOGLE_ACCOUNT_NUMBER} --set global.google.roleName=${GOOGLE_ROLE_NAME}"
+fi
+
 cert_manager_image_arguments=
 if [[ ! -z "${CERT_MANAGER_IMAGE}" ]]
 then
@@ -128,7 +134,7 @@ case $action in
         echo "CSP Rancher Usage Operator successfully installed"
         echo "Installing Rancher CSP Billing Adapter"
 	EnsureKubernetesNamespaceExists "cattle-csp-billing-adapter-system"
-        helm upgrade --install rancher-csp-billing-adapter /cnab/app/charts/rancher-csp-billing-adapter/100.0.0+up0.1.0 ${rancher_billing_adapter_image_arguments} ${azure_billing_arguments} ${aws_billing_arguments} --namespace cattle-csp-billing-adapter-system --atomic --timeout ${helm_timeout}
+        helm upgrade --install rancher-csp-billing-adapter /cnab/app/charts/rancher-csp-billing-adapter/100.0.0+up0.1.0 ${rancher_billing_adapter_image_arguments} ${azure_billing_arguments} ${aws_billing_arguments} ${google_cloud_billing_arguments} --namespace cattle-csp-billing-adapter-system --atomic --timeout ${helm_timeout}
         echo "Rancher CSP Billing Adapter successfully installed"
         ;;
     uninstall)
