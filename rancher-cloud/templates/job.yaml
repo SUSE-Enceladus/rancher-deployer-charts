@@ -8,7 +8,7 @@ spec:
   completions: 1
   parallelism: 1
   backoffLimit: 0
-  ttlSecondsAfterFinished: 360
+  ttlSecondsAfterFinished: 60
   template:
     metadata:
       {{- with .Values.podAnnotations }}
