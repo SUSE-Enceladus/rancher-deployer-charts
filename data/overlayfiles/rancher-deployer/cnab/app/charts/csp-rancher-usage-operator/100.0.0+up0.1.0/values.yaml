@@ -1,6 +1,4 @@
 debug: true
-# used for development only - not supported in production
-devMode: true
 
 rancherUsageOperatorImage: registry.suse.de/devel/pubcloud/crosscloud/sle15-sp5/images/rancher-usage-operator
 rancherUsageOperatorImageTag: latest

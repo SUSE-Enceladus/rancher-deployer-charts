@@ -143,9 +143,6 @@ case $action in
         echo "CSP Rancher Usage Operator CRD successfully uninstalled"
         echo "Uninstalling Rancher"
         helm uninstall rancher -n cattle-system --timeout ${helm_timeout}
-	#echo "Running Rancher cleanup"
-	#/cnab/rancher-cleanup/cleanup.sh force
-        #echo "Rancher successfully uninstalled"
 	echo "Uninstalling Cert-Manager"
 	helm uninstall cert-manager -n cert-manager --timeout ${helm_timeout}
 	echo "Cert-Manager successfully uninstalled"
