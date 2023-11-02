@@ -98,14 +98,14 @@ privateCA: false
 noProxy: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local
 
 # Override rancher image location for Air Gap installs
-rancherImage: rancher/rancher
+rancherImage: registry.rancher.com/rancher/rancher
 # rancher/rancher image tag. https://hub.docker.com/r/rancher/rancher/tags/
 # Defaults to .Chart.appVersion
-# rancherImageTag: v2.7.8
+# rancherImageTag: v2.7.9
 
 # Optionally use rancher image hash instead of image tag.
 # When present, it will be used instead of rancherImageTag.
-#   
+#
 # rancherImageDigest: <sha256 image digest>
 
 # Override imagePullPolicy for rancher server images
