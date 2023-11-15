@@ -202,7 +202,7 @@ spec:
       {{- if .Values.busyboxImage }}
       - image: {{ .Values.busyboxImage}}
       {{- else }}
-      - image: {{ .Values.auditLog.image.repository }}:{{.Values.auditLog.image.tag}}
+      - image: {{ .Values.auditLog.image.repository }}{{- if .Values.auditLog.image.digest }}@{{ .Values.auditLog.image.digest }}{{- else }}:{{ .Values.auditLog.image.tag }}{{- end }}
       {{- end }}
       {{- if .Values.busyboxImagePullPolicy }}
         imagePullPolicy: {{ .Values.busyboxImagePullPolicy }}

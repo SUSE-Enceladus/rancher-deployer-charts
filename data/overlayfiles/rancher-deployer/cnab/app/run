@@ -21,6 +21,26 @@ then
 else
 	rancher_image_arguments="${rancher_image_arguments} --set rancherImageTag=${RANCHER_IMAGE_TAG}"
 fi
+if [[ ! -z "${RANCHER_POSTDELETE_IMAGE}" ]]
+then
+        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.repository=${RANCHER_POSTDELETE_IMAGE}"
+fi
+if [[ ! -z "${RANCHER_POSTDELETE_IMAGE_DIGEST}" ]]
+then
+        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.digest=${RANCHER_POSTDELETE_IMAGE_DIGEST}"
+else
+        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.tag=${RANCHER_POSTDELETE_IMAGE_TAG}"
+fi
+if [[ ! -z "${RANCHER_AUDITLOG_IMAGE}" ]]
+then
+        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.repository=${RANCHER_AUDITLOG_IMAGE}"
+fi
+if [[ ! -z "${RANCHER_AUDITLOG_IMAGE_DIGEST}" ]]
+then
+        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.digest=${RANCHER_AUDITLOG_IMAGE_DIGEST}"
+else
+        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.tag=${RANCHER_AUDITLOG_IMAGE_TAG}"
+fi
 
 rancher_ingress_class_name_arguments=
 if [[ ! -z "${RANCHER_INGRESS_CLASS_NAME}" && "${RANCHER_INGRESS_CLASS_NAME}" != "none" ]]
@@ -68,6 +88,46 @@ then
 	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.digest=${CERT_MANAGER_IMAGE_DIGEST}"
 else
 	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.tag=${CERT_MANAGER_IMAGE_TAG}"
+fi
+if [[ ! -z "${CERT_MANAGER_WEBHOOK_IMAGE}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.repository=${CERT_MANAGER_WEBHOOK_IMAGE}"
+fi
+if [[ ! -z "${CERT_MANAGER_WEBHOOK_IMAGE_DIGEST}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.digest=${CERT_MANAGER_WEBHOOK_IMAGE_DIGEST}"
+else
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.tag=${CERT_MANAGER_WEBHOOK_IMAGE_TAG}"
+fi
+if [[ ! -z "${CERT_MANAGER_CAINJECTOR_IMAGE}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.repository=${CERT_MANAGER_CAINJECTOR_IMAGE}"
+fi
+if [[ ! -z "${CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.digest=${CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST}"
+else
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.tag=${CERT_MANAGER_CAINJECTOR_IMAGE_TAG}"
+fi
+if [[ ! -z "${CERT_MANAGER_ACMESOLVER_IMAGE}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.repository=${CERT_MANAGER_ACMESOLVER_IMAGE}"
+fi
+if [[ ! -z "${CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.digest=${CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST}"
+else
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.tag=${CERT_MANAGER_ACMESOLVER_IMAGE_TAG}"
+fi
+if [[ ! -z "${CERT_MANAGER_STARTUPAPICHECK_IMAGE}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.repository=${CERT_MANAGER_STARTUPAPICHECK_IMAGE}"
+fi
+if [[ ! -z "${CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST}" ]]
+then
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.digest=${CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST}"
+else
+        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.tag=${CERT_MANAGER_STARTUPAPICHECK_IMAGE_TAG}"
 fi
 
 azure_billing_arguments=
