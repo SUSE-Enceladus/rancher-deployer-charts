@@ -1,6 +1,6 @@
 debug: true
 
-rancherUsageOperatorImage: registry.suse.de/devel/pubcloud/crosscloud/sle15-sp5/images/rancher-usage-operator
+rancherUsageOperatorImage: registry.suse.de/suse/sle-15-sp5/update/pubclouds/images/rancher-usage-operator
 rancherUsageOperatorImageTag: latest
 #rancherUsageOperatorImageDigest: sha256:...
 #rancherUsageOperatorImagePullPolicy: Always
