@@ -21,7 +21,7 @@ global:
 # in those sections have precedent over the image specified in the image
 # section here.
 image:
-  repository: registry.suse.de/home/yeey/csp-billing-adapter/images/rancher-deployer
+  repository: registry.suse.de/home/mbelur/branches/suse/sle-15-sp5/update/pubclouds/images/rancher-deployer
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
