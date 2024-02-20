@@ -66,7 +66,7 @@ Check for Rancher image configuration
 */}}
 {{- define "rancher-cloud.image" -}}
   {{- if and (.Values.global) (.Values.global.azure) (.Values.global.azure.images) }}
-    {{- .Values.global.azure.images.rancher_cloud.registry }}/{{ .Values.global.azure.images.rancher_cloud.image }}@{{ .Values.global.azure.images.rancher_cloud.digest }}
+    {{- .Values.global.azure.images.rancher_cloud.registry }}/{{ .Values.global.azure.images.rancher_cloud.image }}{{- if .Values.global.azure.images.rancher_cloud.digest }}@{{ .Values.global.azure.images.rancher_cloud.digest }}{{- else }}:{{ .Values.global.azure.images.rancher_cloud.tag }}{{- end }}
   {{- else if and (.Values.global) (.Values.global.csp) (.Values.global.csp.images) }}
     {{- .Values.global.csp.images.rancher_cloud.registry }}/{{ .Values.global.csp.images.rancher_cloud.image }}{{- if .Values.global.csp.images.rancher_cloud.digest }}@{{ .Values.global.csp.images.rancher_cloud.digest }}{{- else }}:{{ .Values.global.csp.images.rancher_cloud.tag }}{{- end }}
   {{- else }}
