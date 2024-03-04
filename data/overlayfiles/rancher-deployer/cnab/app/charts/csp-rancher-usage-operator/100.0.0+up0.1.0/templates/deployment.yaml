@@ -25,6 +25,8 @@ spec:
           value: {{ .Release.Namespace | quote }}
         - name: K8S_CSP_BILLING_ADAPTER_CONFIGMAP
           value: '{{ include "csp-usage-operator.cspBillingAdapterConfigMap" . }}'
+        - name: K8S_CSP_BILLING_ADAPTER_ARCHIVE
+          value: '{{ include "csp-usage-operator.cspBillingAdapterArchive" . }}'
         - name: K8S_CSP_BILLING_NO_BILL_THRESHOLD
           value: '{{ include "csp-usage-operator.cspBillingNoBillThreshold" . }}'
         - name: K8S_CSP_BILLING_MANAGER_INTERVAL

@@ -56,6 +56,14 @@ rules:
   - ""
   resources:
   - configmaps
+  resourceNames:
+  - metering-archive
+  verbs:
+  - "*"
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
   verbs:
   - create
 --- 
