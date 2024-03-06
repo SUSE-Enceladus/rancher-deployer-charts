@@ -84,6 +84,7 @@ rules:
   - configmaps
   resourceNames:
   - {{ template "csp-usage-operator.cspBillingAdapterConfigMap"  }}
+  - {{ template "csp-usage-operator.cspBillingAdapterArchive"  }}
   verbs:
   - get
 --- 

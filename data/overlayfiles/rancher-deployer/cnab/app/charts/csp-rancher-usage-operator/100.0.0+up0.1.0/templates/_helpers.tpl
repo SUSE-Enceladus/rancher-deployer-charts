@@ -62,6 +62,11 @@ Create the name of the service account to use
 csp-config
 {{- end }}
 
+# Name of the configmap that has the metering archive
+{{- define "csp-usage-operator.cspBillingAdapterArchive" -}}
+metering-archive
+{{- end }}
+
 # Number of days since last billed before notifying user that we are unable
 # to bill them and that they must fix any ongoing issues related to billing
 # in order to maintain supportability.

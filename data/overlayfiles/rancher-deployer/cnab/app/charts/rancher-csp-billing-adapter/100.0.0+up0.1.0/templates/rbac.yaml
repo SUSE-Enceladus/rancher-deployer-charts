@@ -50,6 +50,7 @@ rules:
   - configmaps
   resourceNames:
   - csp-config
+  - metering-archive
   verbs:
   - "*"
 - apiGroups:

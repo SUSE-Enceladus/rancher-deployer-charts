@@ -62,6 +62,11 @@ Create the name of the service account to use
 csp-config
 {{- end }}
 
+# Name of the configmap that has the metering archive
+{{- define "csp-usage-operator.cspBillingAdapterArchive" -}}
+metering-archive
+{{- end }}
+
 {{- define "csp-billing-adapter.usageCRDPlural" -}}
 cspadapterusagerecords
 {{- end }}
