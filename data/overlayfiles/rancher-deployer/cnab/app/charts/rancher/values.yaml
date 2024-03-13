@@ -101,7 +101,7 @@ noProxy: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local
 rancherImage: registry.rancher.com/rancher/rancher
 # rancher/rancher image tag. https://hub.docker.com/r/rancher/rancher/tags/
 # Defaults to .Chart.appVersion
-# rancherImageTag: v2.7.9
+# rancherImageTag: v2.7.11
 
 # Optionally use rancher image hash instead of image tag.
 # When present, it will be used instead of rancherImageTag.
@@ -160,7 +160,7 @@ postDelete:
   enabled: true
   image:
     repository: rancher/shell
-    tag: v0.1.21
+    tag: v0.1.22
   namespaceList:
     - cattle-fleet-system
     - cattle-system
