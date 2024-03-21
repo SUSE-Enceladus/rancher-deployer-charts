@@ -1,3 +1,6 @@
+certManagerChartVersion: v1.12.3
+
+rancherChartVersion: 2.7.11
 rancherHostname: csp-billing
 rancherServerURL: https://csp-billing
 rancherReplicas: 1
@@ -7,14 +10,6 @@ rancherIngressClassName: none
 global:
   csp:
     images:
-      cert_manager:
-        registry: quay.io/jetstack
-        image: cert-manager-controller
-        digest: sha256:2a026935a03575527525b12952b6e1e6a2caddf983d67f8e5025ed85de7b0d7f
-      rancher:
-        registry: rancher
-        image: rancher
-        tag: latest
       rancher_cloud:
         registry: registry.suse.de/home/yeey/csp-billing-adapter/images
         image: rancher-deployer
