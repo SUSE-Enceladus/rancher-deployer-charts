@@ -1,3 +1,7 @@
+certManagerChartVersion: %CERT_MANAGER_CHART_VERSION_PLACEHOLDER%
+
+rancherChartVersion: %RANCHER_CHART_VERSION_PLACEHOLDER%
+#rancherImageTag: %RANCHER_IMAGE_TAG_PLACEHOLDER%
 rancherHostname: csp-billing
 rancherServerURL: https://csp-billing
 rancherReplicas: 1
@@ -17,38 +21,6 @@ global:
       # resource id of the Azure Marketplace Kubernetes application,to be used in usage event payload to metering api, for more information please refer: https://learn.microsoft.com/en-us/partner-center/marketplace/marketplace-metering-service-apis
       resourceId: "DONOTMODIFY" # application's Azure Resource ID, Azure populates this value at deployment time
     images:
-      cert_manager:
-        registry: %CERT_MANAGER_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %CERT_MANAGER_IMAGE_PLACEHOLDER%
-        tag: %CERT_MANAGER_IMAGE_TAG_PLACEHOLDER%
-      cert_manager_webhook:
-        registry: %CERT_MANAGER_WEBHOOK_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %CERT_MANAGER_WEBHOOK_IMAGE_PLACEHOLDER%
-        tag: %CERT_MANAGER_WEBHOOK_IMAGE_TAG_PLACEHOLDER%
-      cert_manager_cainjector:
-        registry: %CERT_MANAGER_CAINJECTOR_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %CERT_MANAGER_CAINJECTOR_IMAGE_PLACEHOLDER%
-        tag: %CERT_MANAGER_CAINJECTOR_IMAGE_TAG_PLACEHOLDER%
-      cert_manager_acmesolver:
-        registry: %CERT_MANAGER_ACMESOLVER_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %CERT_MANAGER_ACMESOLVER_IMAGE_PLACEHOLDER%
-        tag: %CERT_MANAGER_ACMESOLVER_IMAGE_TAG_PLACEHOLDER%
-      cert_manager_startupapicheck:
-        registry: %CERT_MANAGER_STARTUPAPICHECK_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %CERT_MANAGER_STARTUPAPICHECK_IMAGE_PLACEHOLDER%
-        tag: %CERT_MANAGER_STARTUPAPICHECK_IMAGE_TAG_PLACEHOLDER%
-      rancher:
-        registry: %RANCHER_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %RANCHER_IMAGE_PLACEHOLDER%
-        tag: %RANCHER_IMAGE_TAG_PLACEHOLDER%
-      rancher_auditlog:
-        registry: %RANCHER_AUDITLOG_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %RANCHER_AUDITLOG_IMAGE_PLACEHOLDER%
-        tag: %RANCHER_AUDITLOG_IMAGE_TAG_PLACEHOLDER%
-      rancher_postdelete:
-        registry: %RANCHER_POSTDELETE_IMAGE_REGISTRY_PLACEHOLDER%
-        image: %RANCHER_POSTDELETE_IMAGE_PLACEHOLDER%
-        tag: %RANCHER_POSTDELETE_IMAGE_TAG_PLACEHOLDER%
       rancher_cloud:
         registry: %RANCHER_CLOUD_IMAGE_REGISTRY_PLACEHOLDER%
         image: %RANCHER_CLOUD_IMAGE_PLACEHOLDER%

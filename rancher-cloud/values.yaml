@@ -15,6 +15,21 @@ global:
         repository: gcr.io/cloud-marketplace-tools/metering/ubbagent
         tag: latest
 
+  csp:
+    images:
+      rancher_cloud:
+        registry: registry.suse.de/suse/sle-15-sp5/update/pubclouds/images
+        image: rancher-deployer
+        tag: latest
+      csp_rancher_usage_operator:
+        registry: registry.suse.de/suse/sle-15-sp5/update/pubclouds/images
+        image: rancher-usage-operator
+        tag: latest
+      rancher_csp_billing_adapter:
+        registry: registry.suse.de/suse/sle-15-sp5/update/pubclouds/images
+        image: rancher-billing-azure-by-suse-ltd
+        tag: latest
+
 # NOTE: the rancher-cloud image can also be specified in the CSP-specific
 # sections, namely global.azure.images or global.csp.images. If any of the
 # CSP-specifics sections are present and enabled, the rancher-cloud image
@@ -48,6 +63,8 @@ securityContext:
   # runAsNonRoot: true
   runAsUser: 0
 
+certManagerChartVersion: v1.12.3
+rancherChartVersion: 2.7.11
 rancherHostname: csp-billing
 rancherServerURL: https://csp-billing
 rancherReplicas: 1

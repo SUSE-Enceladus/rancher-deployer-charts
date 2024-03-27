@@ -10,38 +10,6 @@ rancher_bootstrap_password=${RANCHER_BOOTSTRAP_PASSWORD:-rancher}
 
 helm_timeout=20m
 
-rancher_image_arguments=
-if [[ ! -z "${RANCHER_IMAGE}" ]]
-then
-	rancher_image_arguments="--set rancherImage=${RANCHER_IMAGE}"
-fi
-if [[ ! -z "${RANCHER_IMAGE_DIGEST}" ]]
-then
-        rancher_image_arguments="${rancher_image_arguments} --set rancherImageDigest=${RANCHER_IMAGE_DIGEST}"
-else
-	rancher_image_arguments="${rancher_image_arguments} --set rancherImageTag=${RANCHER_IMAGE_TAG}"
-fi
-if [[ ! -z "${RANCHER_POSTDELETE_IMAGE}" ]]
-then
-        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.repository=${RANCHER_POSTDELETE_IMAGE}"
-fi
-if [[ ! -z "${RANCHER_POSTDELETE_IMAGE_DIGEST}" ]]
-then
-        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.digest=${RANCHER_POSTDELETE_IMAGE_DIGEST}"
-else
-        rancher_image_arguments="${rancher_image_arguments} --set postDelete.image.tag=${RANCHER_POSTDELETE_IMAGE_TAG}"
-fi
-if [[ ! -z "${RANCHER_AUDITLOG_IMAGE}" ]]
-then
-        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.repository=${RANCHER_AUDITLOG_IMAGE}"
-fi
-if [[ ! -z "${RANCHER_AUDITLOG_IMAGE_DIGEST}" ]]
-then
-        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.digest=${RANCHER_AUDITLOG_IMAGE_DIGEST}"
-else
-        rancher_image_arguments="${rancher_image_arguments} --set auditLog.image.tag=${RANCHER_AUDITLOG_IMAGE_TAG}"
-fi
-
 rancher_ingress_class_name_arguments=
 if [[ ! -z "${RANCHER_INGRESS_CLASS_NAME}" && "${RANCHER_INGRESS_CLASS_NAME}" != "none" ]]
 then
@@ -76,58 +44,6 @@ aws_billing_arguments=
 if [[ ! -z "${AWS_ACCOUNT_NUMBER}" ]]
 then
 	aws_billing_arguments="--set global.aws.enabled=true --set global.aws.accountNumber=${AWS_ACCOUNT_NUMBER} --set global.aws.roleName=${AWS_ROLE_NAME}"
-fi
-
-cert_manager_image_arguments=
-if [[ ! -z "${CERT_MANAGER_IMAGE}" ]]
-then
-        cert_manager_image_arguments="--set image.repository=${CERT_MANAGER_IMAGE}" 
-fi
-if [[ ! -z "${CERT_MANAGER_IMAGE_DIGEST}" ]]
-then
-	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.digest=${CERT_MANAGER_IMAGE_DIGEST}"
-else
-	cert_manager_image_arguments="${cert_manager_image_arguments} --set image.tag=${CERT_MANAGER_IMAGE_TAG}"
-fi
-if [[ ! -z "${CERT_MANAGER_WEBHOOK_IMAGE}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.repository=${CERT_MANAGER_WEBHOOK_IMAGE}"
-fi
-if [[ ! -z "${CERT_MANAGER_WEBHOOK_IMAGE_DIGEST}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.digest=${CERT_MANAGER_WEBHOOK_IMAGE_DIGEST}"
-else
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set webhook.image.tag=${CERT_MANAGER_WEBHOOK_IMAGE_TAG}"
-fi
-if [[ ! -z "${CERT_MANAGER_CAINJECTOR_IMAGE}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.repository=${CERT_MANAGER_CAINJECTOR_IMAGE}"
-fi
-if [[ ! -z "${CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.digest=${CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST}"
-else
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set cainjector.image.tag=${CERT_MANAGER_CAINJECTOR_IMAGE_TAG}"
-fi
-if [[ ! -z "${CERT_MANAGER_ACMESOLVER_IMAGE}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.repository=${CERT_MANAGER_ACMESOLVER_IMAGE}"
-fi
-if [[ ! -z "${CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.digest=${CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST}"
-else
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set acmesolver.image.tag=${CERT_MANAGER_ACMESOLVER_IMAGE_TAG}"
-fi
-if [[ ! -z "${CERT_MANAGER_STARTUPAPICHECK_IMAGE}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.repository=${CERT_MANAGER_STARTUPAPICHECK_IMAGE}"
-fi
-if [[ ! -z "${CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST}" ]]
-then
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.digest=${CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST}"
-else
-        cert_manager_image_arguments="${cert_manager_image_arguments} --set startupapicheck.image.tag=${CERT_MANAGER_STARTUPAPICHECK_IMAGE_TAG}"
 fi
 
 azure_billing_arguments=
@@ -168,14 +84,29 @@ CreateRancherCACertificateSecrets()
 	kubectl create secret generic tls-ca-additional -n cattle-csp-billing-adapter-system --from-file=ca-additional.pem
 }
 
+InstallCertManager()
+{
+        # per https://cert-manager.io/docs/installation/helm/
+        helm repo add jetstack https://charts.jetstack.io --force-update
+        helm repo update
+        helm upgrade --install cert-manager  jetstack/cert-manager --atomic --create-namespace --namespace cert-manager --set installCRDs=true --version ${CERT_MANAGER_CHART_VERSION}
+}
+
+InstallRancherPrime()
+{
+        helm repo add rancher-prime https://charts.rancher.com/server-charts/prime --force-update
+        helm repo update
+        EnsureKubernetesNamespaceExists "cattle-system"
+        helm upgrade --install rancher rancher-prime/rancher --version "${RANCHER_CHART_VERSION}" --atomic --namespace cattle-system --set installCRDs=true --set rancherImageTag=${RANCHER_IMAGE_TAG} ${rancher_ingress_class_name_arguments} --set hostname=${rancher_hostname} --set bootstrapPassword=${rancher_bootstrap_password} --set replicas=${rancher_replicas} --set extraEnv[0].name=CATTLE_SERVER_URL --set extraEnv[0].value=${rancher_server_url} --set extraEnv[1].name=CATTLE_PROMETHEUS_METRICS --set-string extraEnv[1].value=true --timeout ${helm_timeout}
+}
+
 case $action in
     install)
 	echo "Installing Cert-Manager"
-	helm upgrade --install cert-manager  /cnab/app/charts/cert-manager --atomic --create-namespace --namespace cert-manager --set installCRDs=true ${cert_manager_image_arguments}
+	InstallCertManager
 	echo "Cert-Manager successfully installed"
         echo "Installing Rancher"
-	EnsureKubernetesNamespaceExists "cattle-system"
-	helm upgrade --install rancher /cnab/app/charts/rancher --atomic --namespace cattle-system --set installCRDs=true ${rancher_image_arguments} ${rancher_ingress_class_name_arguments} --set hostname=${rancher_hostname} --set bootstrapPassword=${rancher_bootstrap_password} --set replicas=${rancher_replicas} --set extraEnv[0].name=CATTLE_SERVER_URL --set extraEnv[0].value=${rancher_server_url} --set extraEnv[1].name=CATTLE_PROMETHEUS_METRICS --set-string extraEnv[1].value=true --timeout ${helm_timeout}
+	InstallRancherPrime
         echo "Rancher successfully installed"
         echo "Installing CSP Rancher Usage Operator CRD"
 	EnsureKubernetesNamespaceExists "cattle-csp-billing-adapter-system"

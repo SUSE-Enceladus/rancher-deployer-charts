@@ -46,38 +46,8 @@ spec:
               value: "{{ .Values.global.azure.extension.resourceId }}"
             - name: AZURE_PLAN_ID
               value: "{{ .Values.global.azure.marketplace.planId }}"
-            - name: RANCHER_IMAGE
-              value: "{{ .Values.global.azure.images.rancher.registry }}/{{ .Values.global.azure.images.rancher.image }}"
-            - name: RANCHER_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.rancher.digest | quote }}
-            - name: RANCHER_POSTDELETE_IMAGE
-              value: "{{ .Values.global.azure.images.rancher_postdelete.registry }}/{{ .Values.global.azure.images.rancher_postdelete.image }}"
-            - name: RANCHER_POSTDELETE_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.rancher_postdelete.digest | quote }}
-            - name: RANCHER_AUDITLOG_IMAGE
-              value: "{{ .Values.global.azure.images.rancher_auditlog.registry }}/{{ .Values.global.azure.images.rancher_auditlog.image }}"
-            - name: RANCHER_AUDITLOG_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.rancher_auditlog.digest | quote }}
-            - name: CERT_MANAGER_IMAGE
-              value: "{{ .Values.global.azure.images.cert_manager.registry }}/{{ .Values.global.azure.images.cert_manager.image }}"
-            - name: CERT_MANAGER_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.cert_manager.digest | quote }}
-            - name: CERT_MANAGER_WEBHOOK_IMAGE
-              value: "{{ .Values.global.azure.images.cert_manager_webhook.registry }}/{{ .Values.global.azure.images.cert_manager_webhook.image }}"
-            - name: CERT_MANAGER_WEBHOOK_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.cert_manager_webhook.digest | quote }}
-            - name: CERT_MANAGER_CAINJECTOR_IMAGE
-              value: "{{ .Values.global.azure.images.cert_manager_cainjector.registry }}/{{ .Values.global.azure.images.cert_manager_cainjector.image }}"
-            - name: CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.cert_manager_cainjector.digest | quote }}
-            - name: CERT_MANAGER_ACMESOLVER_IMAGE
-              value: "{{ .Values.global.azure.images.cert_manager_acmesolver.registry }}/{{ .Values.global.azure.images.cert_manager_acmesolver.image }}"
-            - name: CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.cert_manager_acmesolver.digest | quote }}
-            - name: CERT_MANAGER_STARTUPAIPCHECK_IMAGE
-              value: "{{ .Values.global.azure.images.cert_manager_startupapicheck.registry }}/{{ .Values.global.azure.images.cert_manager_startupapicheck.image }}"
-            - name: CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST
-              value: {{ .Values.global.azure.images.cert_manager_startupapicheck.digest | quote }}
+            - name: RANCHER_IMAGE_TAG
+              value: {{ .Values.rancherImageTag | quote }}
             - name: RANCHER_USAGE_OPERATOR_IMAGE
               value: "{{ .Values.global.azure.images.csp_rancher_usage_operator.registry }}/{{ .Values.global.azure.images.csp_rancher_usage_operator.image }}"
             - name: RANCHER_USAGE_OPERATOR_IMAGE_DIGEST
@@ -87,80 +57,6 @@ spec:
             - name: RANCHER_BILLING_ADAPTER_IMAGE_DIGEST
               value: {{ .Values.global.azure.images.rancher_csp_billing_adapter.digest | quote }}
 {{- else if and (.Values.global) (.Values.global.csp) (.Values.global.csp.images) }}
-            - name: RANCHER_IMAGE
-              value: "{{ .Values.global.csp.images.rancher.registry }}/{{ .Values.global.csp.images.rancher.image }}"
-            {{- if .Values.global.csp.images.rancher.digest }}
-            - name: RANCHER_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.rancher.digest | quote }}
-            {{- else }}
-            - name: RANCHER_IMAGE_TAG
-              value: {{ .Values.global.csp.images.rancher.tag | quote }}
-            {{- end }}
-            - name: RANCHER_POSTDELETE_IMAGE
-              value: "{{ .Values.global.csp.images.rancher_postdelete.registry }}/{{ .Values.global.csp.images.rancher_postdelete.image }}"
-            {{- if .Values.global.csp.images.rancher_postdelete.digest }}
-            - name: RANCHER_POSTDELETE_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.rancher_postdelete.digest | quote }}
-            {{- else }}
-            - name: RANCHER_POSTDELETE_IMAGE_TAG
-              value: {{ .Values.global.csp.images.rancher_postdelete.tag | quote }}
-            {{- end }}
-            - name: RANCHER_AUDITLOG_IMAGE
-              value: "{{ .Values.global.csp.images.rancher_auditlog.registry }}/{{ .Values.global.csp.images.rancher_auditlog.image }}"
-            {{- if .Values.global.csp.images.rancher_auditlog.digest }}
-            - name: RANCHER_AUDITLOG_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.rancher_auditlog.digest | quote }}
-            {{- else }}
-            - name: RANCHER_AUDITLOG_IMAGE_TAG
-              value: {{ .Values.global.csp.images.rancher_auditlog.tag | quote }}
-            {{- end }}
-            - name: CERT_MANAGER_IMAGE
-              value: "{{ .Values.global.csp.images.cert_manager.registry }}/{{ .Values.global.csp.images.cert_manager.image }}"
-            {{- if .Values.global.csp.images.cert_manager.digest }}
-            - name: CERT_MANAGER_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.cert_manager.digest | quote }}
-            {{- else }}
-            - name: CERT_MANAGER_IMAGE_TAG
-              value: {{ .Values.global.csp.images.cert_manager.tag | quote }}
-            {{- end }}
-            - name: CERT_MANAGER_WEBHOOK_IMAGE
-              value: "{{ .Values.global.csp.images.cert_manager_webhook.registry }}/{{ .Values.global.csp.images.cert_manager_webhook.image }}"
-            {{- if .Values.global.csp.images.cert_manager_webhook.digest }}
-            - name: CERT_MANAGER_WEBHOOK_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.cert_manager_webhook.digest | quote }}
-            {{- else }}
-            - name: CERT_MANAGER_IMAGE_TAG
-              value: {{ .Values.global.csp.images.cert_manager_webhook.tag | quote }}
-            {{- end }}
-            - name: CERT_MANAGER_CAINJECTOR_IMAGE
-              value: "{{ .Values.global.csp.images.cert_manager_cainjector.registry }}/{{ .Values.global.csp.images.cert_manager_cainjector.image }}"
-            {{- if .Values.global.csp.images.cert_manager_cainjector.digest }}
-            - name: CERT_MANAGER_CAINJECTOR_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.cert_manager_cainjector.digest | quote }}
-            {{- else }}
-            - name: CERT_MANAGER_CAINJECTOR_IMAGE_TAG
-              value: {{ .Values.global.csp.images.cert_manager_cainjector.tag | quote }}
-            {{- end }}
-            - name: CERT_MANAGER_ACMESOLVER_IMAGE
-              value: "{{ .Values.global.csp.images.cert_manager_acmesolver.registry }}/{{ .Values.global.csp.images.cert_manager_acmesolver.image }}"
-            {{- if .Values.global.csp.images.cert_manager_acmesolver.digest }}
-            - name: CERT_MANAGER_ACMESOLVER_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.cert_manager_acmesolver.digest | quote }}
-            {{- else }}
-            - name: CERT_MANAGER_ACMESOLVER_IMAGE_TAG
-              value: {{ .Values.global.csp.images.cert_manager_acmesolver.tag | quote }}
-            {{- end }}
-            - name: CERT_MANAGER_STARTUPAPICHECK_IMAGE
-              value: "{{ .Values.global.csp.images.cert_manager_startupapicheck.registry }}/{{ .Values.global.csp.images.cert_manager_startupapicheck.image }}"
-            {{- if .Values.global.csp.images.cert_manager_startupapicheck.digest }}
-            - name: CERT_MANAGER_STARTUPAPICHECK_IMAGE_DIGEST
-              value: {{ .Values.global.csp.images.cert_manager_startupapicheck.digest | quote }}
-            {{- else }}
-            - name: CERT_MANAGER_STARTUPAPICHECK_IMAGE_TAG
-              value: {{ .Values.global.csp.images.cert_manager_startupapicheck.tag | quote }}
-            {{- end }}
-            - name: RANCHER_USAGE_OPERATOR_IMAGE
-              value: "{{ .Values.global.csp.images.csp_rancher_usage_operator.registry }}/{{ .Values.global.csp.images.csp_rancher_usage_operator.image }}"
             {{- if .Values.global.csp.images.csp_rancher_usage_operator.digest }}
             - name: RANCHER_USAGE_OPERATOR_IMAGE_DIGEST
               value: {{ .Values.global.csp.images.csp_rancher_usage_operator.digest | quote }}
@@ -198,3 +94,7 @@ spec:
             - name: RANCHER_INGRESS_CLASS_NAME
               value: {{ .Values.rancherIngressClassName | quote }}
 {{- end }}
+            - name: RANCHER_CHART_VERSION
+              value: {{ .Values.rancherChartVersion | quote }}
+            - name: CERT_MANAGER_CHART_VERSION
+              value: {{ .Values.certManagerChartVersion | quote }}
