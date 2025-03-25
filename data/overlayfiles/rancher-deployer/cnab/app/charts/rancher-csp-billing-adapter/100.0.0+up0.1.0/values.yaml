@@ -1,7 +1,23 @@
 rancherBillingAdapterImage: registry.opensuse.org/home/yeey/rancher-csp-billing-adapter/containers/rancher-local-billing-container
 rancherBillingAdapterImageTag: latest
-#rancherBillingAdapterImageDigest: sha256:...
-#rancherBillingAdapterImagePullPolicy: Always
+
+global:
+  azure:
+    enabled: true
+    identity:
+      # Application's Managed Service Identity (MSI) Client ID. ClientID can be used to generate authentication token to communicate to external services like Microsoft Marketplace Metering API
+      clientId: "DONOTMODIFY" # Azure populates this value at deployment time
+    marketplace:
+      # id of the plan purchased for the Azure Marketplace Kubernetes application,to be used in usage event payload to metering api, for more information please refer: https://learn.microsoft.com/en-us/partner-center/marketplace/marketplace-metering-service-apis
+      planId: "DONOTMODIFY" # Azure populates this value at deployment time
+    extension:
+      # resource id of the Azure Marketplace Kubernetes application,to be used in usage event payload to metering api, for more information please refer: https://learn.microsoft.com/en-us/partner-center/marketplace/marketplace-metering-service-apis
+      resourceId: "DONOTMODIFY" # application's Azure Resource ID, Azure populates this value at deployment time
+    images:
+      rancher_csp_billing_adapter:
+        registry: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_REGISTRY_PLACEHOLDER%
+        image: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_PLACEHOLDER%
+        tag: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_TAG_PLACEHOLDER%
 
 imagePullSecrets: []
 
@@ -14,26 +30,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-# specific to Azure
-#
-global:
-  azure:
-    enabled: false
-    identity:
-      clientId: TBD
-    extension:
-      resourceId: TBD
-    marketplace:
-      planId: TBD
-  aws:
-    enabled: false
-    accountNumber: ""
-    roleName: ""
-  google:
-    enabled: false
-    ubbagent:
-      reportingSecretName: fake-reporting-secret
-      image:
-        repository: gcr.io/cloud-marketplace-tools/metering/ubbagent
-        tag: latest

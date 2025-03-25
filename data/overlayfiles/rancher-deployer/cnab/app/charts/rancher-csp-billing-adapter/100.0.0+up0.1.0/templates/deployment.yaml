@@ -69,11 +69,7 @@ spec:
           - name: CSP_ADAPTER_CONFIG_FILE
             value: {{ .Values.cspAdapterConfigFile }}
   {{- end }}
-  {{- if .Values.rancherBillingAdapterImageDigest }}
-        image: {{ .Values.rancherBillingAdapterImage }}@{{ .Values.rancherBillingAdapterImageDigest }}
-  {{- else }}
-        image: {{ .Values.rancherBillingAdapterImage }}:{{ default .Chart.AppVersion .Values.rancherBillingAdapterImageTag }}
-  {{- end }}
+        image: "{{ .Values.global.azure.images.rancher_csp_billing_adapter.registry }}/{{ .Values.global.azure.images.rancher_csp_billing_adapter.image }}:{{ .Values.global.azure.images.rancher_csp_billing_adapter.tag }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.rancherBillingAdapterImagePullPolicy }}
 
       serviceAccountName: {{ include "rancher-csp-billing-adapter.serviceAccountName" . }}
