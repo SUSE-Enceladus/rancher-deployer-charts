@@ -18,6 +18,8 @@ global:
         registry: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_REGISTRY_PLACEHOLDER%
         image: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_PLACEHOLDER%
         tag: %RANCHER_CSP_BILLING_ADAPTER_IMAGE_TAG_PLACEHOLDER%
+  securityContext:
+    runAsNonRoot: true
 
 imagePullSecrets: []
 
