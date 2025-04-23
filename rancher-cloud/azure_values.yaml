@@ -83,5 +83,5 @@ securityContext:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  runAsUser: 0
+  runAsNonRoot: true
+  runAsUser: 1001

@@ -45,8 +45,8 @@ securityContext:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  runAsUser: 0
+  runAsNonRoot: true
+  runAsUser: 1001
 
 rancherHostname: csp-billing
 rancherServerURL: https://csp-billing
