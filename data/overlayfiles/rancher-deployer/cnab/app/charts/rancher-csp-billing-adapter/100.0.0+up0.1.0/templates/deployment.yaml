@@ -71,6 +71,10 @@ spec:
   {{- end }}
         image: "{{ .Values.global.azure.images.rancher_csp_billing_adapter.registry }}/{{ .Values.global.azure.images.rancher_csp_billing_adapter.image }}:{{ .Values.global.azure.images.rancher_csp_billing_adapter.tag }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.rancherBillingAdapterImagePullPolicy }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 
       serviceAccountName: {{ include "rancher-csp-billing-adapter.serviceAccountName" . }}
       {{- with .Values.nodeSelector }}
