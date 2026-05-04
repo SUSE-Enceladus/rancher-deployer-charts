@@ -64,6 +64,12 @@ spec:
             value: "{{ .Values.global.azure.extension.resourceId }}"
           - name: "PLAN_ID"
             value: "{{ .Values.global.azure.marketplace.planId }}"
+          - name: "PUBLISHER"
+            value: "{{ .Values.global.azure.marketplace.publisher }}"
+          - name: "OFFER_ID"
+            value: "{{ .Values.global.azure.marketplace.offerId }}"
+          - name: "RELEASE_TRAIN"
+            value: "{{ .Values.global.azure.marketplace.releaseTrain }}"
   {{- end }}
   {{- if .Values.cspAdapterConfigFile }}
           - name: CSP_ADAPTER_CONFIG_FILE
