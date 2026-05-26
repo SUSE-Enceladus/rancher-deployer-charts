@@ -15,8 +15,8 @@ global:
       resourceId: "DONOTMODIFY" # application's Azure Resource ID, Azure populates this value at deployment time
     images:
       rancher_csp_billing_adapter:
-        registry: DONNOTMODIFY
-        image: DONOTMODIFY
+        registry: "DONNOTMODIFY"
+        image: "DONOTMODIFY"
         tag: latest
 securityContext:
   runAsNonRoot: true
